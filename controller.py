@@ -1,12 +1,15 @@
 import sqlite3 as sql
+from unittest import result
+import os.path
+
+location = os.path.dirname(os.path.abspath(__file__))
 
 def createDB():
-	conn = sql.connect("usuarios.db")
+	conn = sql.Connection(location + "/usuarios.db")
 	conn.commit()
-	conn.close()
 
 def createTable():
-	conn = sql.connect("usuarios.db")
+	conn = sql.Connection(location + "/usuarios.db")
 	cursor = conn.cursor()
 	cursor.execute(
 		"""
@@ -17,30 +20,43 @@ def createTable():
 		"""
 	)
 	conn.commit()
-	conn.close()
 
 def insertRow(username, password):
-    conn = sql.connect("usuarios.db")
+    conn = sql.Connection(location + "/usuarios.db")
     cursor = conn.cursor()
-    instruction = f"INSERT INTO usuarios VALUES ({username}, {password})"
-    cursor.execute(instruction)
+    query1 = f"INSERT INTO user VALUES ('{username}', '{password}')"
+    cursor.execute(query1)
     conn.commit()
     conn.close()
 
-def verifyRow(username):
+def verifyReg(user):
     ans = False
-    conn = sql.connect("usuarios.db")
+    conn = sql.Connection(location + "/usuarios.db")
     cursor = conn.cursor()
-    cursor.execute(
-        f"SELECT username FROM user WHERE (username = {username})"
-    )
-    result = cursor.fetchall()
+    query1 = f"SELECT username FROM user WHERE username = '{user}'"
+    rows = cursor.execute(query1)
+    result = rows.fetchall()
     if len(result) == 0:
         ans = True
     conn.commit()
     conn.close()
     return ans
 
+def verifyLog(user, passw):
+    ans = False
+    conn = sql.Connection(location + "/usuarios.db")
+    cursor = conn.cursor()
+    query1 = f"SELECT username, password FROM user WHERE username = '{user}' AND password = '{passw}'"
+    rows = cursor.execute(query1)
+    result = rows.fetchall()
+    if len(result) >= 1:
+        ans = True
+    conn.commit()
+    conn.close()
+    return ans
+
 if __name__ == "__main__":
-    createTable()
+    pass
+    #insertRow("santicr", "santi8590")
+    #createTable()
     #createDB()
